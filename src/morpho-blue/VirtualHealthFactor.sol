@@ -39,11 +39,7 @@ contract VirtualHealthFactorSnippets {
     /// @param id The identifier of the market.
     /// @param user The address of the user whose health factor is being calculated.
     /// @return healthFactor The calculated health factor.
-    function userHealthFactor(MarketParams memory marketParams, Id id, address user)
-        public
-        view
-        returns (uint256)
-    {
+    function userHealthFactor(MarketParams memory marketParams, Id id, address user) public view returns (uint256) {
         uint256 collateralPrice = IOracle(marketParams.oracle).price();
         uint256 collateral = morpho.collateral(id, user);
         uint256 borrowed = morpho.expectedBorrowAssets(marketParams, user);
@@ -51,7 +47,7 @@ contract VirtualHealthFactorSnippets {
         uint256 maxBorrow = collateral.mulDivDown(collateralPrice, ORACLE_PRICE_SCALE).wMulDown(marketParams.lltv);
 
         if (borrowed == 0) return type(uint256).max;
-        healthFactor = maxBorrow.wDivDown(borrowed);
+        return maxBorrow.wDivDown(borrowed);
     }
 
     /// @notice Calculates the health factor of a user after a virtual repayment.
@@ -71,7 +67,7 @@ contract VirtualHealthFactorSnippets {
         uint256 borrowed = morpho.expectedBorrowAssets(marketParams, user);
 
         uint256 newBorrowed = borrowed - repaidAssets;
-        
+
         uint256 maxBorrow = collateral.mulDivDown(collateralPrice, ORACLE_PRICE_SCALE).wMulDown(marketParams.lltv);
 
         return newBorrowed == 0 ? type(uint256).max : maxBorrow.wDivDown(newBorrowed);
